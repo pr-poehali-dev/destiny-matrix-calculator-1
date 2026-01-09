@@ -37,6 +37,32 @@ const calculateDestinyMatrix = (day: number, month: number, year: number) => {
   };
 };
 
+// Камни и талисманы для каждого аркана
+const arcanaTalismans: Record<number, { stones: string[]; symbols: string[]; colors: string[] }> = {
+  1: { stones: ['Рубин', 'Гранат', 'Красная яшма'], symbols: ['Жезл', 'Меч', 'Огонь'], colors: ['Красный', 'Оранжевый'] },
+  2: { stones: ['Лунный камень', 'Жемчуг', 'Селенит'], symbols: ['Луна', 'Сова', 'Книга'], colors: ['Серебристый', 'Белый'] },
+  3: { stones: ['Изумруд', 'Розовый кварц', 'Нефрит'], symbols: ['Венера', 'Роза', 'Зерно'], colors: ['Зеленый', 'Розовый'] },
+  4: { stones: ['Аметист', 'Сапфир', 'Гематит'], symbols: ['Трон', 'Скипетр', 'Щит'], colors: ['Фиолетовый', 'Синий'] },
+  5: { stones: ['Лазурит', 'Содалит', 'Сапфир'], symbols: ['Ключ', 'Крест', 'Книга'], colors: ['Синий', 'Индиго'] },
+  6: { stones: ['Розовый кварц', 'Родонит', 'Коралл'], symbols: ['Сердце', 'Купидон', 'Роза'], colors: ['Розовый', 'Красный'] },
+  7: { stones: ['Тигровый глаз', 'Янтарь', 'Цитрин'], symbols: ['Колесница', 'Меч', 'Крылья'], colors: ['Желтый', 'Золотой'] },
+  8: { stones: ['Малахит', 'Зеленый авантюрин', 'Хризопраз'], symbols: ['Весы', 'Меч', 'Перо'], colors: ['Зеленый', 'Изумрудный'] },
+  9: { stones: ['Обсидиан', 'Дымчатый кварц', 'Серый агат'], symbols: ['Фонарь', 'Посох', 'Звезда'], colors: ['Серый', 'Серебряный'] },
+  10: { stones: ['Аметист', 'Хрусталь', 'Радужный обсидиан'], symbols: ['Колесо', 'Сфинкс', 'Змея'], colors: ['Фиолетовый', 'Радужный'] },
+  11: { stones: ['Сердолик', 'Гранат', 'Красная яшма'], symbols: ['Лев', 'Солнце', 'Огонь'], colors: ['Оранжевый', 'Красный'] },
+  12: { stones: ['Аквамарин', 'Лазурит', 'Топаз'], symbols: ['Дерево', 'Вода', 'Веревка'], colors: ['Голубой', 'Синий'] },
+  13: { stones: ['Черный турмалин', 'Обсидиан', 'Оникс'], symbols: ['Роза', 'Череп', 'Феникс'], colors: ['Черный', 'Темно-серый'] },
+  14: { stones: ['Аквамарин', 'Лабрадорит', 'Бирюза'], symbols: ['Чаши', 'Ангел', 'Радуга'], colors: ['Голубой', 'Бирюзовый'] },
+  15: { stones: ['Черный оникс', 'Гранат', 'Красный турмалин'], symbols: ['Рога', 'Цепи', 'Пентаграмма'], colors: ['Черный', 'Красный'] },
+  16: { stones: ['Красный агат', 'Гранат', 'Рубин'], symbols: ['Молния', 'Башня', 'Огонь'], colors: ['Красный', 'Оранжевый'] },
+  17: { stones: ['Синий топаз', 'Аквамарин', 'Лунный камень'], symbols: ['Звезда', 'Вода', 'Птица'], colors: ['Голубой', 'Серебристый'] },
+  18: { stones: ['Лунный камень', 'Лабрадорит', 'Аметист'], symbols: ['Луна', 'Рак', 'Собака'], colors: ['Серебристый', 'Фиолетовый'] },
+  19: { stones: ['Цитрин', 'Янтарь', 'Солнечный камень'], symbols: ['Солнце', 'Подсолнух', 'Дети'], colors: ['Желтый', 'Золотой'] },
+  20: { stones: ['Аметист', 'Флюорит', 'Прозрачный кварц'], symbols: ['Труба', 'Ангел', 'Крест'], colors: ['Фиолетовый', 'Белый'] },
+  21: { stones: ['Изумруд', 'Зеленый авантюрин', 'Нефрит'], symbols: ['Венок', 'Бесконечность', 'Мандала'], colors: ['Зеленый', 'Голубой'] },
+  22: { stones: ['Опал', 'Хрусталь', 'Радужный флюорит'], symbols: ['Роза', 'Собака', 'Мешок'], colors: ['Все цвета радуги'] },
+};
+
 // Описания арканов
 const arcanaDescriptions: Record<number, { title: string; meaning: string; talent: string; color: string }> = {
   1: { title: 'Маг', meaning: 'Энергия начинаний, воля, лидерство', talent: 'Способность воплощать идеи в реальность', color: 'from-red-500 to-orange-500' },
@@ -65,7 +91,9 @@ const arcanaDescriptions: Record<number, { title: string; meaning: string; talen
 
 const Index = () => {
   const [birthDate, setBirthDate] = useState({ day: '', month: '', year: '' });
+  const [partnerDate, setPartnerDate] = useState({ day: '', month: '', year: '' });
   const [matrix, setMatrix] = useState<ReturnType<typeof calculateDestinyMatrix> | null>(null);
+  const [partnerMatrix, setPartnerMatrix] = useState<ReturnType<typeof calculateDestinyMatrix> | null>(null);
   const [activeTab, setActiveTab] = useState('calculator');
 
   const handleCalculate = () => {
@@ -81,6 +109,48 @@ const Index = () => {
   };
 
   const getArcanaInfo = (num: number) => arcanaDescriptions[num] || arcanaDescriptions[22];
+  const getTalismans = (num: number) => arcanaTalismans[num] || arcanaTalismans[22];
+
+  const handleCompatibilityCalculate = () => {
+    const day = parseInt(partnerDate.day);
+    const month = parseInt(partnerDate.month);
+    const year = parseInt(partnerDate.year);
+
+    if (day && month && year && day <= 31 && month <= 12 && year > 1900 && year < 2100) {
+      const result = calculateDestinyMatrix(day, month, year);
+      setPartnerMatrix(result);
+    }
+  };
+
+  const calculateCompatibility = () => {
+    if (!matrix || !partnerMatrix) return { score: 0, description: '', areas: [] };
+    
+    const lifeDiff = Math.abs(matrix.lifePath - partnerMatrix.lifePath);
+    const soulDiff = Math.abs(matrix.soul - partnerMatrix.soul);
+    const personalityDiff = Math.abs(matrix.personality - partnerMatrix.personality);
+    
+    let score = 100;
+    score -= lifeDiff * 5;
+    score -= soulDiff * 4;
+    score -= personalityDiff * 3;
+    score = Math.max(0, Math.min(100, score));
+    
+    let description = '';
+    if (score >= 85) description = 'Идеальная совместимость! Ваши энергии дополняют друг друга.';
+    else if (score >= 70) description = 'Отличная совместимость. Вы хорошо понимаете друг друга.';
+    else if (score >= 50) description = 'Хорошая совместимость. Есть области для роста вместе.';
+    else if (score >= 30) description = 'Средняя совместимость. Потребуются усилия с обеих сторон.';
+    else description = 'Низкая совместимость. Вам нужно много работать над отношениями.';
+    
+    const areas = [
+      { name: 'Духовная связь', score: Math.max(0, 100 - lifeDiff * 8) },
+      { name: 'Эмоциональная гармония', score: Math.max(0, 100 - soulDiff * 7) },
+      { name: 'Взаимопонимание', score: Math.max(0, 100 - personalityDiff * 6) },
+      { name: 'Общие цели', score: Math.max(0, 100 - Math.abs(matrix.destiny - partnerMatrix.destiny) * 5) },
+    ];
+    
+    return { score, description, areas };
+  };
 
   return (
     <div className="min-h-screen stars-bg py-12 px-4">
@@ -188,34 +258,35 @@ const Index = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="relative max-w-md mx-auto aspect-square">
-                      <div className="absolute inset-0 border-2 border-primary/50 rotate-45 rounded-lg"></div>
+                      <div className="absolute inset-0 border-2 border-primary/50 rotate-45 rounded-lg rotating-border"></div>
+                      <div className="absolute inset-4 border border-primary/30 rotate-45 rounded-lg shimmer-effect"></div>
                       <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 gap-4 p-8">
                         <div className="col-start-2 flex items-center justify-center">
-                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.day).color}`}>
+                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.day).color} energy-pulse`}>
                             {matrix.day}
                           </Badge>
                         </div>
                         <div></div>
                         <div></div>
                         <div className="flex items-center justify-center">
-                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.month).color}`}>
+                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.month).color} energy-pulse`}>
                             {matrix.month}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-center">
-                          <Badge className={`text-3xl font-bold px-8 py-4 bg-gradient-to-r ${getArcanaInfo(matrix.center).color} mystic-glow`}>
+                          <Badge className={`text-3xl font-bold px-8 py-4 bg-gradient-to-r ${getArcanaInfo(matrix.center).color} mystic-glow energy-pulse`}>
                             {matrix.center}
                           </Badge>
                         </div>
                         <div className="flex items-center justify-center">
-                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.year).color}`}>
+                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.year).color} energy-pulse`}>
                             {matrix.year}
                           </Badge>
                         </div>
                         <div></div>
                         <div></div>
                         <div className="col-start-2 flex items-center justify-center">
-                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.lifePath).color}`}>
+                          <Badge className={`text-2xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.lifePath).color} energy-pulse`}>
                             {matrix.lifePath}
                           </Badge>
                         </div>
@@ -238,10 +309,28 @@ const Index = () => {
                         <Badge className={`text-4xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.lifePath).color}`}>
                           {matrix.lifePath}
                         </Badge>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-bold text-lg mb-1">{getArcanaInfo(matrix.lifePath).title}</h4>
                           <p className="text-muted-foreground text-sm">{getArcanaInfo(matrix.lifePath).meaning}</p>
                           <p className="text-accent text-sm mt-2">✨ {getArcanaInfo(matrix.lifePath).talent}</p>
+                          <div className="mt-3 pt-3 border-t border-primary/20">
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              <span className="text-xs text-muted-foreground">Камни:</span>
+                              {getTalismans(matrix.lifePath).stones.map((stone) => (
+                                <Badge key={stone} variant="outline" className="text-xs">
+                                  {stone}
+                                </Badge>
+                              ))}
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              <span className="text-xs text-muted-foreground">Символы:</span>
+                              {getTalismans(matrix.lifePath).symbols.map((symbol) => (
+                                <Badge key={symbol} variant="outline" className="text-xs">
+                                  {symbol}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -259,10 +348,20 @@ const Index = () => {
                         <Badge className={`text-4xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.personality).color}`}>
                           {matrix.personality}
                         </Badge>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-bold text-lg mb-1">{getArcanaInfo(matrix.personality).title}</h4>
                           <p className="text-muted-foreground text-sm">{getArcanaInfo(matrix.personality).meaning}</p>
                           <p className="text-accent text-sm mt-2">✨ {getArcanaInfo(matrix.personality).talent}</p>
+                          <div className="mt-3 pt-3 border-t border-primary/20">
+                            <div className="flex flex-wrap gap-1">
+                              <span className="text-xs text-muted-foreground">Цвета силы:</span>
+                              {getTalismans(matrix.personality).colors.map((color) => (
+                                <Badge key={color} variant="outline" className="text-xs">
+                                  {color}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -280,10 +379,20 @@ const Index = () => {
                         <Badge className={`text-4xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.soul).color}`}>
                           {matrix.soul}
                         </Badge>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-bold text-lg mb-1">{getArcanaInfo(matrix.soul).title}</h4>
                           <p className="text-muted-foreground text-sm">{getArcanaInfo(matrix.soul).meaning}</p>
                           <p className="text-accent text-sm mt-2">✨ {getArcanaInfo(matrix.soul).talent}</p>
+                          <div className="mt-3 pt-3 border-t border-primary/20">
+                            <div className="flex flex-wrap gap-1 mb-2">
+                              <span className="text-xs text-muted-foreground">Камни:</span>
+                              {getTalismans(matrix.soul).stones.map((stone) => (
+                                <Badge key={stone} variant="outline" className="text-xs">
+                                  {stone}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -301,10 +410,20 @@ const Index = () => {
                         <Badge className={`text-4xl font-bold px-6 py-3 bg-gradient-to-r ${getArcanaInfo(matrix.destiny).color}`}>
                           {matrix.destiny}
                         </Badge>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="font-bold text-lg mb-1">{getArcanaInfo(matrix.destiny).title}</h4>
                           <p className="text-muted-foreground text-sm">{getArcanaInfo(matrix.destiny).meaning}</p>
                           <p className="text-accent text-sm mt-2">✨ {getArcanaInfo(matrix.destiny).talent}</p>
+                          <div className="mt-3 pt-3 border-t border-primary/20">
+                            <div className="flex flex-wrap gap-1">
+                              <span className="text-xs text-muted-foreground">Символы:</span>
+                              {getTalismans(matrix.destiny).symbols.map((symbol) => (
+                                <Badge key={symbol} variant="outline" className="text-xs">
+                                  {symbol}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -384,20 +503,153 @@ const Index = () => {
           {/* Совместимость */}
           <TabsContent value="compatibility">
             {matrix && (
-              <Card className="card-glow bg-card/80 backdrop-blur border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-3xl">Анализ совместимости</CardTitle>
-                  <CardDescription>Введите дату рождения партнера для расчета</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <Icon name="Heart" className="h-16 w-16 mx-auto mb-4 text-primary/50" />
-                    <p className="text-muted-foreground">
-                      Функция анализа совместимости будет доступна в следующей версии
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="space-y-6">
+                <Card className="card-glow bg-card/80 backdrop-blur border-primary/20">
+                  <CardHeader>
+                    <CardTitle className="text-3xl">Анализ совместимости</CardTitle>
+                    <CardDescription>Введите дату рождения партнера для расчета совместимости</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-3 gap-4 mb-6">
+                      <div>
+                        <label className="text-sm text-muted-foreground mb-2 block">День партнера</label>
+                        <Input
+                          type="number"
+                          placeholder="15"
+                          min="1"
+                          max="31"
+                          value={partnerDate.day}
+                          onChange={(e) => setPartnerDate({ ...partnerDate, day: e.target.value })}
+                          className="bg-input/50 border-primary/30 focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-muted-foreground mb-2 block">Месяц</label>
+                        <Input
+                          type="number"
+                          placeholder="08"
+                          min="1"
+                          max="12"
+                          value={partnerDate.month}
+                          onChange={(e) => setPartnerDate({ ...partnerDate, month: e.target.value })}
+                          className="bg-input/50 border-primary/30 focus:border-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-sm text-muted-foreground mb-2 block">Год</label>
+                        <Input
+                          type="number"
+                          placeholder="1990"
+                          min="1900"
+                          max="2100"
+                          value={partnerDate.year}
+                          onChange={(e) => setPartnerDate({ ...partnerDate, year: e.target.value })}
+                          className="bg-input/50 border-primary/30 focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleCompatibilityCalculate}
+                      className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-lg h-12"
+                    >
+                      <Icon name="HeartHandshake" className="mr-2 h-5 w-5" />
+                      Рассчитать совместимость
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {partnerMatrix && (
+                  <>
+                    <Card className="card-glow bg-card/80 backdrop-blur border-primary/20">
+                      <CardHeader>
+                        <CardTitle className="text-3xl flex items-center gap-3">
+                          <span>Уровень совместимости</span>
+                          <Badge className="text-2xl px-4 py-1 bg-gradient-to-r from-accent to-primary">
+                            {calculateCompatibility().score}%
+                          </Badge>
+                        </CardTitle>
+                        <CardDescription>{calculateCompatibility().description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {calculateCompatibility().areas.map((area) => (
+                            <div key={area.name}>
+                              <div className="flex justify-between mb-2">
+                                <span className="text-sm font-medium">{area.name}</span>
+                                <span className="text-sm text-muted-foreground">{area.score}%</span>
+                              </div>
+                              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                                  style={{ width: `${area.score}%` }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <Card className="card-glow bg-card/80 backdrop-blur border-primary/20">
+                        <CardHeader>
+                          <CardTitle className="text-xl">Ваши числа</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Жизненный путь</span>
+                              <Badge className={`bg-gradient-to-r ${getArcanaInfo(matrix.lifePath).color}`}>
+                                {matrix.lifePath} - {getArcanaInfo(matrix.lifePath).title}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Душа</span>
+                              <Badge className={`bg-gradient-to-r ${getArcanaInfo(matrix.soul).color}`}>
+                                {matrix.soul} - {getArcanaInfo(matrix.soul).title}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Личность</span>
+                              <Badge className={`bg-gradient-to-r ${getArcanaInfo(matrix.personality).color}`}>
+                                {matrix.personality} - {getArcanaInfo(matrix.personality).title}
+                              </Badge>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="card-glow bg-card/80 backdrop-blur border-primary/20">
+                        <CardHeader>
+                          <CardTitle className="text-xl">Числа партнера</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Жизненный путь</span>
+                              <Badge className={`bg-gradient-to-r ${getArcanaInfo(partnerMatrix.lifePath).color}`}>
+                                {partnerMatrix.lifePath} - {getArcanaInfo(partnerMatrix.lifePath).title}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Душа</span>
+                              <Badge className={`bg-gradient-to-r ${getArcanaInfo(partnerMatrix.soul).color}`}>
+                                {partnerMatrix.soul} - {getArcanaInfo(partnerMatrix.soul).title}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Личность</span>
+                              <Badge className={`bg-gradient-to-r ${getArcanaInfo(partnerMatrix.personality).color}`}>
+                                {partnerMatrix.personality} - {getArcanaInfo(partnerMatrix.personality).title}
+                              </Badge>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </TabsContent>
         </Tabs>
